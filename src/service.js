@@ -91,14 +91,31 @@ module.exports = function(mixinOptions) {
 			 * @param {Object?} def
 			 */
 			createActionResolver(actionName, def = {}) {
-				const { dataLoader = false, nullIfError = false, params = {}, rootParams = {} } = def;
+				const {
+					dataLoader = false,
+					nullIfError = false,
+					params = {},
+					rootParams = {},
+					metaParams = {},
+				} = def;
 				const rootKeys = Object.keys(rootParams);
+				const metaKeys = Object.keys(metaParams);
+				const firstMetaKey = metaKeys[0];
+				const firstRootKey = rootKeys[0];
 
 				return async (root, args, context) => {
+					const meta = context.ctx.meta;
+
 					try {
 						if (dataLoader) {
-							const dataLoaderKey = rootKeys[0]; // use the first root key
-							const rootValue = root && _.get(root, dataLoaderKey);
+							let rootValue;
+
+							if (firstMetaKey) {
+								rootValue = meta && _.get(meta, firstMetaKey);
+							} else {
+								rootValue = root && _.get(root, firstRootKey);
+							}
+
 							if (rootValue == null) {
 								return null;
 							}
@@ -108,9 +125,15 @@ module.exports = function(mixinOptions) {
 								: await context.loaders[actionName].load(rootValue);
 						} else {
 							const p = {};
-							if (root && rootKeys) {
-								rootKeys.forEach(k => _.set(p, def.rootParams[k], _.get(root, k)));
+
+							if (meta && metaKeys.length > 0) {
+								metaKeys.forEach(k => _.set(p, metaParams[k], _.get(meta, k)));
 							}
+
+							if (root && rootKeys.length > 0) {
+								rootKeys.forEach(k => _.set(p, rootParams[k], _.get(root, k)));
+							}
+
 							return await context.ctx.call(actionName, _.defaultsDeep(args, p, params));
 						}
 					} catch (err) {
