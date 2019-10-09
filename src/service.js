@@ -95,13 +95,17 @@ module.exports = function(mixinOptions) {
 					dataLoader = false,
 					nullIfError = false,
 					params = {},
+					argsParams = {},
 					rootParams = {},
 					metaParams = {},
 				} = def;
-				const rootKeys = Object.keys(rootParams);
 				const metaKeys = Object.keys(metaParams);
+				const rootKeys = Object.keys(rootParams);
+				const argsKeys = Object.keys(argsParams);
+
 				const firstMetaKey = metaKeys[0];
 				const firstRootKey = rootKeys[0];
+				const firstArgsKey = argsKeys[0];
 
 				return async (root, args, context) => {
 					const meta = context.ctx.meta;
@@ -110,10 +114,12 @@ module.exports = function(mixinOptions) {
 						if (dataLoader) {
 							let rootValue;
 
-							if (firstMetaKey) {
-								rootValue = meta && _.get(meta, firstMetaKey);
-							} else {
+							if (firstArgsKey) {
+								rootValue = _.get(args, firstArgsKey);
+							} else if (firstRootKey) {
 								rootValue = root && _.get(root, firstRootKey);
+							} else if (firstMetaKey) {
+								rootValue = meta && _.get(meta, firstMetaKey);
 							}
 
 							if (rootValue == null) {
@@ -132,6 +138,13 @@ module.exports = function(mixinOptions) {
 
 							if (root && rootKeys.length > 0) {
 								rootKeys.forEach(k => _.set(p, rootParams[k], _.get(root, k)));
+							}
+
+							if (argsKeys.length > 0) {
+								argsKeys.forEach(k => {
+									_.set(p, argsParams[k], _.get(args, k));
+									_.unset(args, k);
+								});
 							}
 
 							return await context.ctx.call(actionName, _.defaultsDeep(args, p, params));
