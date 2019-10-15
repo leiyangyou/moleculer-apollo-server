@@ -21,6 +21,7 @@ module.exports = function(mixinOptions) {
 		},
 		schema: null,
 		serverOptions: {},
+		pubsubOptions: {},
 		createAction: true,
 		subscriptionEventName: "graphql.publish",
 	});
@@ -438,7 +439,7 @@ module.exports = function(mixinOptions) {
 				}
 
 				try {
-					this.pubsub = new PubSub();
+					this.pubsub = new PubSub(mixinOptions.pubsubOptions);
 					const services = this.broker.registry.getServiceList({ withActions: true });
 					const schema = this.generateGraphQLSchema(services);
 
