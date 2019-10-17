@@ -98,17 +98,17 @@ module.exports = function(mixinOptions) {
 					dataLoader = false,
 					nullIfError = false,
 					params = {},
-					argsParams = {},
+					argParams = {},
 					rootParams = {},
 					metaParams = {},
 				} = def;
 				const metaKeys = Object.keys(metaParams);
 				const rootKeys = Object.keys(rootParams);
-				const argsKeys = Object.keys(argsParams);
+				const argKeys = Object.keys(argParams);
 
 				const firstMetaKey = metaKeys[0];
 				const firstRootKey = rootKeys[0];
-				const firstArgsKey = argsKeys[0];
+				const firstArgsKey = argKeys[0];
 
 				return async (root, args, context) => {
 					const meta = context.ctx.meta;
@@ -143,9 +143,9 @@ module.exports = function(mixinOptions) {
 								rootKeys.forEach(k => _.set(p, rootParams[k], _.get(root, k)));
 							}
 
-							if (argsKeys.length > 0) {
-								argsKeys.forEach(k => {
-									_.set(p, argsParams[k], _.get(args, k));
+							if (argKeys.length > 0) {
+								argKeys.forEach(k => {
+									_.set(p, argParams[k], _.get(args, k));
 									_.unset(args, k);
 								});
 							}
