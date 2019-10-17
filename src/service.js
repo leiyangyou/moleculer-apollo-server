@@ -108,30 +108,30 @@ module.exports = function(mixinOptions) {
 
 				const firstMetaKey = metaKeys[0];
 				const firstRootKey = rootKeys[0];
-				const firstArgsKey = argKeys[0];
+				const firstArgKey = argKeys[0];
 
 				return async (root, args, context) => {
 					const meta = context.ctx.meta;
 
 					try {
 						if (dataLoader) {
-							let rootValue;
+							let value;
 
-							if (firstArgsKey) {
-								rootValue = _.get(args, firstArgsKey);
+							if (firstArgKey) {
+								value = _.get(args, firstArgKey);
 							} else if (firstRootKey) {
-								rootValue = root && _.get(root, firstRootKey);
+								value = root && _.get(root, firstRootKey);
 							} else if (firstMetaKey) {
-								rootValue = meta && _.get(meta, firstMetaKey);
+								value = meta && _.get(meta, firstMetaKey);
 							}
 
-							if (rootValue == null) {
+							if (value == null) {
 								return null;
 							}
 
-							return Array.isArray(rootValue)
-								? await Promise.all(rootValue.map(item => context.loaders[actionName].load(item)))
-								: await context.loaders[actionName].load(rootValue);
+							return Array.isArray(value)
+								? await Promise.all(value.map(item => context.loaders[actionName].load(item)))
+								: await context.loaders[actionName].load(value);
 						} else {
 							const p = {};
 
