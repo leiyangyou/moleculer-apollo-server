@@ -528,7 +528,13 @@ module.exports = function(mixinOptions) {
 						const typeLoaders = Object.values(resolvers).reduce((resolverAccum, type) => {
 							const resolverLoaders = Object.values(type).reduce((fieldAccum, resolver) => {
 								if (_.isPlainObject(resolver)) {
-									const { action, dataLoader = false, params = {}, rootParams = {} } = resolver;
+									const {
+										action,
+										dataLoader = false,
+										params = {},
+										rootParams = {},
+										metaParams = {}
+									} = resolver;
 									const actionParam = Object.values(rootParams)[0]; // use the first root parameter
 									if (dataLoader && actionParam) {
 										const resolverActionName = this.getResolverActionName(serviceName, action);
@@ -542,6 +548,10 @@ module.exports = function(mixinOptions) {
 															[actionParam]: keys,
 														},
 														params,
+														_.reduce(metaParams, (acc, v, k) => {
+															_.set(acc, v, _.get(ctx.meta, k))
+															return acc
+														}, {})
 													),
 												),
 											);
