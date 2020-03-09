@@ -467,7 +467,24 @@ module.exports = function(mixinOptions) {
 				}
 			},
 
-			async prepareGraphQLSchema() {
+			async prepareGraphqlSchema() {
+				if (!this._prepareGraphqlSchemaPromise) {
+					this._prepareGraphqlSchemaPromise = this.doPrepareGraphqlSchema().then(
+						result => {
+							this._prepareGraphqlSchemaPromise = null;
+							return result;
+						},
+						err => {
+							this._prepareGraphqlSchemaPromise = null;
+							throw err;
+						}
+					);
+				}
+
+				return this._prepareGraphqlSchemaPromise;
+			},
+
+			async doPrepareGraphqlSchema() {
 				// Schema is up-to-date
 				if (!this.shouldUpdateGraphqlSchema && this.graphqlHandler) {
 					return;
