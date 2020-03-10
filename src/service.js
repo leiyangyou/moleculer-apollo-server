@@ -467,7 +467,7 @@ module.exports = function(mixinOptions) {
 				}
 			},
 
-			async prepareGraphqlSchema() {
+			async prepareGraphQLSchema() {
 				if (!this._prepareGraphqlSchemaPromise) {
 					this._prepareGraphqlSchemaPromise = this.doPrepareGraphqlSchema().then(
 						result => {
