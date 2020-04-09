@@ -523,6 +523,11 @@ module.exports = function(mixinOptions) {
 								const connectionParams = req
 									? req.headers
 									: connection.context.connectionParams;
+								
+								if (connection && connection.context && connection.context.moleculerContextContainer) {
+									connection.context.moleculerContextContainer.ctx = ctx
+								}
+								
 								return {
 									ctx,
 									service,
