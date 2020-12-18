@@ -467,7 +467,7 @@ module.exports = function(mixinOptions) {
 				}
 			},
 
-			async prepareGraphqlSchema() {
+			async prepareGraphQLSchema() {
 				if (!this._prepareGraphqlSchemaPromise) {
 					this._prepareGraphqlSchemaPromise = this.doPrepareGraphqlSchema().then(
 						result => {
@@ -523,6 +523,11 @@ module.exports = function(mixinOptions) {
 								const connectionParams = req
 									? req.headers
 									: connection.context.connectionParams;
+								
+								if (connection && connection.context && connection.context.moleculerContextContainer) {
+									connection.context.moleculerContextContainer.ctx = ctx
+								}
+								
 								return {
 									ctx,
 									service,
